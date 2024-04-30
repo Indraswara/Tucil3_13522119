@@ -1,14 +1,22 @@
 package src;
 
-import src.Lmao.*;
-import src.test1.*;
+import java.util.*;
+import src.Util.*;
 
 public class Main {
     public static void main(String[] args){
-        Lmao uh = new Lmao("Anjing");
-        Test1 test = new Test1(20);
-        uh.lmao();
-        test.myNumber();
-        System.out.println("Helo tugas kecil ");
+        DictionaryLib dict = new DictionaryLib("src/Data/dict.txt");
+        Scanner scanner = new Scanner(System.in); 
+        System.out.println("Selamat datang di Word Ladder: ");
+        System.out.print("Start word: "); 
+        String startWord = scanner.nextLine();
+        System.out.print("End Word: ");
+        String endWord = scanner.nextLine();
+
+        if(dict.isInDict(endWord)){
+            System.out.println("start");
+        }
+
+        scanner.close();
     } 
 }
