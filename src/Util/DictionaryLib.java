@@ -12,6 +12,9 @@ public class DictionaryLib{
         return dictLib.contains(word.toLowerCase());
     }
 
+    public List<String> getDict(){
+        return this.dictLib;
+    }
     public void printDic() {
         System.out.print("[");
         int size = dictLib.size();
