@@ -16,9 +16,14 @@ public class Main {
         UCS ucs = new UCS();
         List<String> ans;
         if(dict.isInDict(endWord) && dict.isInDict(startWord)){
-            ans = ucs.Process(startWord, endWord, dict.getDict());
+            long startTime = System.currentTimeMillis(); 
+            ans = ucs.process(startWord, endWord, dict);
+            long endTime = System.currentTimeMillis(); 
             System.out.println(ans);
+            System.out.println(endTime - startTime);
         }
+
+        
         scanner.close();
     } 
 }

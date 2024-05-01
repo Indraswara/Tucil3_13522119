@@ -1,111 +1,112 @@
 package src.Algorithm;
 
 import java.util.*;
-
+import src.Util.DictionaryLib;
 public class UCS {
-    public List<String> Process(String startWord, String endWord, List<String> Dictionary){
+    public List<String> process(String startWord, String endWord, DictionaryLib dictionary) {
+        PriorityQueue<Node> priorityQueue = new PriorityQueue<>(Comparator.comparing(Node::getCost));
+        Map<String, Integer> costMap = new HashMap<>();
+        Set<String> visitedWords = new HashSet<>();
+        Map<String, String> parentMap = new HashMap<>();
 
-        PriorityQueue<Node> priorityQueue = new PriorityQueue<>(Comparator.comparing(Node::getCost)); 
         priorityQueue.offer(new Node(startWord, 0));
-        
-        boolean[] visited = new boolean[Dictionary.size()];
-        Arrays.fill(visited, false);
+        costMap.put(startWord, 0);
 
-        Map<String, Integer> parentMap = new HashMap<>();
-        parentMap.put(startWord, -1);
-        while (!priorityQueue.isEmpty()){
+        while (!priorityQueue.isEmpty()) {
             Node currNode = priorityQueue.poll();
-            String currWord = currNode.getWord(); 
+            String currWord = currNode.getWord();
             int currCost = currNode.getCost();
 
             
+            visitedWords.add(currWord);
             
-            int index = Dictionary.indexOf(currWord);
-            visited[index] = true;
-            
-            List<String> nextWords = generateValidWords(currWord, endWord, Dictionary);
-            for(String nextWord : nextWords){
-                int nextCost = currCost + 1;
-                int nextIndex = Dictionary.indexOf(nextWord);
+            List<String> nextWords = generateValidWords(currWord, endWord, dictionary);
+            for (String nextWord : nextWords) {
+                int newCost = currCost + calculateCost(nextWord, endWord);
                 
-                if (!visited[nextIndex] || nextCost < getCost(nextWord, priorityQueue)) {
-                    visited[nextIndex] = true;
-                    parentMap.put(nextWord, index);
-                    priorityQueue.offer(new Node(nextWord, nextCost));
-
-                    if(nextWord.equals(endWord)){
-                        return makePath(parentMap, startWord, endWord, Dictionary);
+                if (!visitedWords.contains(nextWord) && (!costMap.containsKey(nextWord) || newCost < costMap.get(nextWord))) {
+                    costMap.put(nextWord, newCost);
+                    parentMap.put(nextWord, currWord);
+                    priorityQueue.offer(new Node(nextWord, newCost));
+                    if (nextWord.equals(endWord)) {
+                        return reconstructPath(parentMap, startWord, endWord);
                     }
                 }
             }
-            
         }
+
         return Collections.emptyList();
     }
 
-    private static List<String> generateValidWords(String word, String endWord, List<String> dict) {
+    private List<String> generateValidWords(String word, String endWord, DictionaryLib dictionary) {
         List<String> validWords = new ArrayList<>();
-
-        for (int i = word.length() - 1; i >= 0; i--) {
+        for (int i = 0; i < word.length(); i++) {
             char originalChar = word.charAt(i);
-            char endChar = endWord.charAt(i);
-            if(originalChar != endChar){
+            char endChar = endWord.charAt(i); 
+            if(endChar != originalChar){
                 for (char c = 'a'; c <= 'z'; c++) {
-                    
                     if (c != originalChar) {
                         StringBuilder modifiedWordBuilder = new StringBuilder(word);
                         modifiedWordBuilder.setCharAt(i, c);
                         String modifiedWord = modifiedWordBuilder.toString();
     
-                        if (dict.contains(modifiedWord)) {
+                        if (dictionary.isInDict(modifiedWord)) {
                             validWords.add(modifiedWord);
                         }
                     }
-                }
+                }            
             }
         }
 
         return validWords;
     }
 
-    private int getCost(String word, PriorityQueue<Node> priorityQueue) {
-        for (Node node : priorityQueue) {
-            if (node.getWord().equals(word)) {
-                return node.getCost();
-            }
-        }
-        return Integer.MAX_VALUE;
-    }
-
-
-
-    private List<String> makePath(Map<String, Integer> parentMap, String startWord, String endWord, List<String> dict) {
+    private List<String> reconstructPath(Map<String, String> parentMap, String startWord, String endWord) {
         List<String> path = new ArrayList<>();
         String current = endWord;
 
         while (!current.equals(startWord)) {
             path.add(current);
-            int parentIndex = parentMap.get(current);
-            current = dict.get(parentIndex);
+            current = parentMap.get(current);
         }
         path.add(startWord);
         Collections.reverse(path);
         return path;
     }
     
-    private class Node{
-        private String word; 
-        private int cost; 
-    
-        public Node(String word, int cost){
-            this.word = word; 
+    private int calculateCost(String word1, String word2) {
+        if (word1.length() != word2.length()) {
+            throw new IllegalArgumentException("Words must have the same length");
+        }
+
+        int cost = 0;
+        for (int i = 0; i < word1.length(); i++) {
+            char char1 = word1.charAt(i);
+            char char2 = word2.charAt(i);
+
+            // Calculate absolute difference in ASCII values
+            int charDiff = Math.abs((int) char1 - (int) char2);
+
+            // Accumulate cost based on character difference
+            cost += charDiff;
+        }
+
+        return cost;
+    }
+    private static class Node {
+        private String word;
+        private int cost;
+
+        public Node(String word, int cost) {
+            this.word = word;
             this.cost = cost;
         }
 
-        public String getWord(){
+        public String getWord() {
             return this.word;
         }
-        public int getCost(){
+
+        public int getCost() {
             return this.cost;
         }
     }
