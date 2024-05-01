@@ -1,7 +1,7 @@
 package src;
-
 import java.util.*;
 import src.Util.*;
+import src.Algorithm.*;
 
 public class Main {
     public static void main(String[] args){
@@ -13,10 +13,17 @@ public class Main {
         System.out.print("End Word: ");
         String endWord = scanner.nextLine();
 
-        if(dict.isInDict(endWord)){
-            System.out.println("start");
+        UCS ucs = new UCS();
+        List<String> ans;
+        if(dict.isInDict(endWord) && dict.isInDict(startWord)){
+            long startTime = System.currentTimeMillis(); 
+            ans = ucs.process(startWord, endWord, dict);
+            long endTime = System.currentTimeMillis(); 
+            System.out.println(ans);
+            System.out.println(endTime - startTime);
         }
 
+        
         scanner.close();
     } 
 }
