@@ -1,1 +1,1 @@
-java -cp bin src.Main
+java -Xmx4G -cp bin src.Main

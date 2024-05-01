@@ -8,33 +8,64 @@ public class UCS {
         PriorityQueue<Node> priorityQueue = new PriorityQueue<>(Comparator.comparing(Node::getCost)); 
         priorityQueue.offer(new Node(startWord, 0));
         
-        Set<String> visited = new HashSet<>();
-        visited.add(startWord);
+        boolean[] visited = new boolean[Dictionary.size()];
+        Arrays.fill(visited, false);
 
-        Map<String, String> parentMap = new HashMap<>();
-
+        Map<String, Integer> parentMap = new HashMap<>();
+        parentMap.put(startWord, -1);
         while (!priorityQueue.isEmpty()){
             Node currNode = priorityQueue.poll();
             String currWord = currNode.getWord(); 
             int currCost = currNode.getCost();
 
-            System.out.println(currWord);
-
-            if(currWord.equals(endWord)){
-                return makePath(parentMap, startWord, endWord);
-            }
-            List<String> nextWords = getNextWords(currWord, Dictionary);
-            for (String nextWord : nextWords) {
-                int nextCost = currCost + 1; 
+            
+            
+            int index = Dictionary.indexOf(currWord);
+            visited[index] = true;
+            
+            List<String> nextWords = generateValidWords(currWord, endWord, Dictionary);
+            for(String nextWord : nextWords){
+                int nextCost = currCost + 1;
+                int nextIndex = Dictionary.indexOf(nextWord);
                 
-                if (!visited.contains(nextWord) || nextCost < getCost(nextWord, priorityQueue)) {
-                    visited.add(nextWord);
-                    parentMap.put(nextWord, currWord);
+                if (!visited[nextIndex] || nextCost < getCost(nextWord, priorityQueue)) {
+                    visited[nextIndex] = true;
+                    parentMap.put(nextWord, index);
                     priorityQueue.offer(new Node(nextWord, nextCost));
+
+                    if(nextWord.equals(endWord)){
+                        return makePath(parentMap, startWord, endWord, Dictionary);
+                    }
+                }
+            }
+            
+        }
+        return Collections.emptyList();
+    }
+
+    private static List<String> generateValidWords(String word, String endWord, List<String> dict) {
+        List<String> validWords = new ArrayList<>();
+
+        for (int i = word.length() - 1; i >= 0; i--) {
+            char originalChar = word.charAt(i);
+            char endChar = endWord.charAt(i);
+            if(originalChar != endChar){
+                for (char c = 'a'; c <= 'z'; c++) {
+                    
+                    if (c != originalChar) {
+                        StringBuilder modifiedWordBuilder = new StringBuilder(word);
+                        modifiedWordBuilder.setCharAt(i, c);
+                        String modifiedWord = modifiedWordBuilder.toString();
+    
+                        if (dict.contains(modifiedWord)) {
+                            validWords.add(modifiedWord);
+                        }
+                    }
                 }
             }
         }
-        return Collections.emptyList();
+
+        return validWords;
     }
 
     private int getCost(String word, PriorityQueue<Node> priorityQueue) {
@@ -45,46 +76,21 @@ public class UCS {
         }
         return Integer.MAX_VALUE;
     }
-    private static List<String> getNextWords(String endWord, List<String> dictionary) {
-        List<String> nextWords = new ArrayList<>();
-        for (String dictWord : dictionary) {
-            if (isOneCharDifference(dictWord, endWord)) {
-                nextWords.add(dictWord);
-            }
+
+
+
+    private List<String> makePath(Map<String, Integer> parentMap, String startWord, String endWord, List<String> dict) {
+        List<String> path = new ArrayList<>();
+        String current = endWord;
+
+        while (!current.equals(startWord)) {
+            path.add(current);
+            int parentIndex = parentMap.get(current);
+            current = dict.get(parentIndex);
         }
-        return nextWords;
-    }
-
-    private static boolean isOneCharDifference(String word1, String word2) {
-        if (word1.length() != word2.length()) {
-            return false;
-        }
-
-        int differencesCount = 0;
-        int diffIndex = -1;
-
-        for (int i = 0; i < word1.length(); i++) {
-            if (word1.charAt(i) != word2.charAt(i)) {
-                differencesCount++;
-                if (differencesCount > 1) {
-                    return false; 
-                }
-                diffIndex = i; 
-            }
-        }
-
-        return differencesCount == 1 && word1.charAt(diffIndex) != word2.charAt(diffIndex);
-    }
-
-    private List<String> makePath(Map<String, String> parentMap, String startWord, String endWord){
-        List<String> newPath = new ArrayList<>(); 
-        String current = endWord; 
-        while(current != null){
-            newPath.add(current);
-            current = parentMap.get(current);
-        }
-        Collections.reverse(newPath);
-        return newPath;
+        path.add(startWord);
+        Collections.reverse(path);
+        return path;
     }
     
     private class Node{
