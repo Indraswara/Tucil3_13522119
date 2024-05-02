@@ -25,12 +25,11 @@ public class Astar extends Algorithm{
         while(!priorityQueue.isEmpty()){
             Node currNode = priorityQueue.poll(); 
             String currWord = currNode.getWord(); 
+            int currCost = currNode.getCost();
             visitedWords.add(currWord); 
             List<String> nextWords = generateValidWords(currWord, startWord, endWord, dicrionary); 
             for(String nextWord : nextWords){
-                int newCost = funcCost(currWord, nextWord, endWord);
-                // System.out.println(nextWord + " : " +  newCost);
-                
+                int newCost = currCost + 1 + gbfs.heuristic(nextWord, endWord);
                 if (!visitedWords.contains(nextWord) && (!costMap.containsKey(nextWord) || newCost < costMap.get(nextWord))) {
                     costMap.put(nextWord, newCost);
                     path.put(nextWord, currWord);
@@ -44,12 +43,10 @@ public class Astar extends Algorithm{
         return Collections.emptyList();
     }
 
-    public int funcCost(String currWord, String nextWord, String endWord){
-        UCS ucs = new UCS();
+    public int funcCost(String nextWord, String endWord){
         GreedyBest gbfs = new GreedyBest();
-        int pathCost = ucs.calculateCost(currWord, nextWord);
         int heuristic = gbfs.heuristic(nextWord, endWord);
         
-        return heuristic + pathCost;
+        return heuristic;
     } 
 }

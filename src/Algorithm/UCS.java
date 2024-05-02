@@ -16,13 +16,13 @@ public class UCS extends Algorithm{
         while (!priorityQueue.isEmpty()) {
             Node currNode = priorityQueue.poll();
             String currWord = currNode.getWord();
-
+            int currCost = currNode.getCost();
             
             visitedWords.add(currWord);
             
             List<String> nextWords = generateValidWords(currWord, startWord, endWord, dictionary);
             for (String nextWord : nextWords) {
-                int newCost = calculateCost(currWord, nextWord);
+                int newCost = currCost + 1;
 
                 if (!visitedWords.contains(nextWord) && (!costMap.containsKey(nextWord) || newCost < costMap.get(nextWord))) {
                     costMap.put(nextWord, newCost);
@@ -42,7 +42,6 @@ public class UCS extends Algorithm{
         if (word1.length() != word2.length()) {
             throw new IllegalArgumentException("Words must have the same length");
         }
-
         int cost = 0;
         for (int i = 0; i < word1.length(); i++) {
             char char1 = word1.charAt(i);
