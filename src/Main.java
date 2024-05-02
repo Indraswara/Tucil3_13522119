@@ -20,6 +20,13 @@ public class Main {
         List<String> ans = Collections.emptyList();
         long startTime = 0, endTime = 0;
         if(dict.isInDict(endWord) && dict.isInDict(startWord)){
+            //filter word
+            List<String> validWords = new ArrayList<String>();
+            for(String word : dict.getDict()){
+                if(word.length() == startWord.length()){
+                    validWords.add(word);
+                }
+            }
             System.out.println("Pilih algoritma: ");
             System.out.println("1. UCS");
             System.out.println("2. Greedy Best First Search");
@@ -29,13 +36,13 @@ public class Main {
             startTime = System.currentTimeMillis();
             switch (input) {
                 case 1:
-                    ans = ucs.process(startWord, endWord, dict);    
+                    ans = ucs.process(startWord, endWord, validWords);    
                     break;
                 case 2: 
-                    ans = gbfs.process(startWord, endWord, dict);
+                    ans = gbfs.process(startWord, endWord, validWords);
                     break;
                 case 3: 
-                    ans = astar.process(startWord, endWord, dict);
+                    ans = astar.process(startWord, endWord, validWords);
                     break;
                 default:
                     break;
@@ -43,7 +50,7 @@ public class Main {
             endTime = System.currentTimeMillis();
         }
         System.out.println(ans);
-        System.out.println((endTime-startTime)/1000 + " s");
+        System.out.println((endTime-startTime) +  " ms");
         scanner.close();
     } 
 
