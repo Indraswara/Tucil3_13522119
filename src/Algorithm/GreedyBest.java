@@ -1,7 +1,6 @@
 package src.Algorithm;
 
 import java.util.*;
-import src.Util.DictionaryLib;
 
 
 public class GreedyBest extends Algorithm{
@@ -14,14 +13,14 @@ public class GreedyBest extends Algorithm{
         while(!priorityQueue.isEmpty()){
             Node currNode = priorityQueue.poll(); 
             String currWord = currNode.getWord(); 
-            visitedWords.add(currWord); 
+            // visitedWords.add(currWord); 
+            // dictionary.remove(currWord);
             List<String> nextWords = getValidWords(currWord, dictionary); 
             for(String nextWord : nextWords){
                 int newCost = heuristic(nextWord, endWord);
-                if(visitedWords.contains(nextWord)){
-                    continue;
-                }
-                else{
+                if(!visitedWords.contains(nextWord)){
+                    visitedWords.add(nextWord); 
+                    dictionary.remove(nextWord);
                     Node next = new Node(nextWord, newCost, currNode);
                     priorityQueue.add(next);
                     if (nextWord.equals(endWord)) {

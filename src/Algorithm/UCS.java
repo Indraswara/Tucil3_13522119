@@ -1,7 +1,6 @@
 package src.Algorithm;
 
 import java.util.*;
-import src.Util.DictionaryLib;
 
 public class UCS extends Algorithm{
     public List<String> process(String startWord, String endWord, List<String> dictionary) {
@@ -14,13 +13,14 @@ public class UCS extends Algorithm{
             Node currNode = priorityQueue.poll();
             String currWord = currNode.getWord();
             int currCost = currNode.getCost();
+            // visitedWords.add(currWord);
+            // dictionary.remove(currWord);
             List<String> nextWords = getValidWords(currWord, dictionary);
             for (String nextWord : nextWords) {
                 int newCost = currCost + 1;
-                if(visitedWords.contains(nextWord)){
-                    continue;
-                }
-                else{
+                if(!visitedWords.contains(nextWord)){
+                    visitedWords.add(nextWord);
+                    dictionary.remove(nextWord);
                     Node next = new Node(nextWord, newCost, currNode);
                     priorityQueue.add(next);
                     if(nextWord.equals(endWord)){

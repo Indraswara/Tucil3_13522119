@@ -13,20 +13,19 @@ public class Astar extends Algorithm{
         Set<String> visitedWords = new HashSet<>(); 
 
         GreedyBest gbfs = new GreedyBest();
-        UCS ucs = new UCS();
         priorityQueue.add(new Node(startWord, gbfs.heuristic(startWord, endWord), null));
         while(!priorityQueue.isEmpty()){
             Node currNode = priorityQueue.poll(); 
             String currWord = currNode.getWord(); 
             int currCost = currNode.getCost();
             visitedWords.add(currWord); 
+            dictionary.remove(currWord);
             List<String> nextWords = getValidWords(currWord, dictionary);
             for(String nextWord : nextWords){
-                int newCost = currCost + ucs.calculateCost(nextWord, endWord) + gbfs.heuristic(nextWord, endWord);
-                if(visitedWords.contains(nextWord)){
-                    continue;
-                }
+                int newCost = currCost + 1 + gbfs.heuristic(nextWord, endWord);
                 if (!visitedWords.contains(nextWord)) {
+                    visitedWords.add(nextWord); 
+                    dictionary.remove(nextWord);
                     Node next = new Node(nextWord, newCost, currNode);
                     priorityQueue.add(next);
                     if (nextWord.equals(endWord)) {
