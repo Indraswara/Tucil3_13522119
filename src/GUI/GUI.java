@@ -29,9 +29,6 @@ public class GUI implements ActionListener {
     private JRadioButton aStarRadioButton;
 
     public GUI() {
-        
-
-
         // Initialize frame
         frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -142,7 +139,7 @@ public class GUI implements ActionListener {
                     selectedAlgo = "AStar";
                 }
     
-                List<String> ans = new ArrayList<>();
+                SearchResult ans = new SearchResult();
                 startTime = System.currentTimeMillis();
                 switch (selectedAlgo){
                     case "UCS":
@@ -161,15 +158,19 @@ public class GUI implements ActionListener {
                 
     
                 wordDisplay.setText("");
-                wordDisplay.append("Lama waktu: " + (endTime - startTime) + " ms\n");
-                wordDisplay.append("Panjang node: " + ans.size() + "\n");
-                
-
-                wordDisplay.append("\nLIST NODE: \n");
-                for(var word : ans){
-                    wordDisplay.append(word + "\n");
+                if(ans.getPath() == null){
+                    wordDisplay.append("Maaf gak ketemu");
                 }
+                else{
+                    wordDisplay.append("Lama waktu: " + (endTime - startTime) + " ms\n");
+                    wordDisplay.append("Panjang node: " + ans.getPath().size() + "\n");
+                    wordDisplay.append("Banyak Node divisit: " + ans.getVisitedWordCount()+ "\n");
     
+                    wordDisplay.append("\nLIST NODE: \n");
+                    for(var word : ans.getPath()){
+                        wordDisplay.append(word + "\n");
+                    }
+                }
                 // Implement action here based on button click
                 System.out.println("Start Word: " + start);
                 System.out.println("End Word: " + end);

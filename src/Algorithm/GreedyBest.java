@@ -4,7 +4,7 @@ import java.util.*;
 
 
 public class GreedyBest extends Algorithm{
-    public List<String> process(String startWord, String endWord, List<String> dictionary){
+    public SearchResult process(String startWord, String endWord, List<String> dictionary){
         PriorityQueue<Node> priorityQueue = new PriorityQueue<>(Comparator.comparingInt(Node::getCost));
         Set<String> visitedWords = new HashSet<>(); 
 
@@ -13,8 +13,8 @@ public class GreedyBest extends Algorithm{
         while(!priorityQueue.isEmpty()){
             Node currNode = priorityQueue.poll(); 
             String currWord = currNode.getWord(); 
-            // visitedWords.add(currWord); 
-            // dictionary.remove(currWord);
+            visitedWords.add(currWord); 
+            dictionary.remove(currWord);
             List<String> nextWords = getValidWords(currWord, dictionary); 
             for(String nextWord : nextWords){
                 if(!visitedWords.contains(nextWord)){
@@ -23,12 +23,12 @@ public class GreedyBest extends Algorithm{
                     Node next = new Node(nextWord, heuristic(nextWord, endWord), currNode);
                     priorityQueue.add(next);
                     if (nextWord.equals(endWord)) {
-                        return next.reconstructPath();
+                        return new SearchResult(next.reconstructPath(), visitedWords.size());
                     }
                 }
             }
         } 
-        return Collections.emptyList();
+        return new SearchResult();
     }
 
     public int heuristic(String word, String endWord){

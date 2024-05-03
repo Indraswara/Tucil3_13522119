@@ -1,14 +1,10 @@
 package src.Algorithm;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Set;
+import java.util.*;
+
 
 public class Astar extends Algorithm{
-     public List<String> process(String startWord, String endWord, List<String> dictionary){
+     public SearchResult process(String startWord, String endWord, List<String> dictionary){
         PriorityQueue<Node> priorityQueue = new PriorityQueue<>(Comparator.comparing(Node::getCost));
         Set<String> visitedWords = new HashSet<>(); 
 
@@ -23,17 +19,17 @@ public class Astar extends Algorithm{
             List<String> nextWords = getValidWords(currWord, dictionary);
             for(String nextWord : nextWords){
                 int newCost = currCost + 1 + gbfs.heuristic(nextWord, endWord);
-                if (!visitedWords.contains(nextWord)) {
+                if(!visitedWords.contains(nextWord)) {
                     visitedWords.add(nextWord); 
                     dictionary.remove(nextWord);
                     Node next = new Node(nextWord, newCost, currNode);
                     priorityQueue.add(next);
-                    if (nextWord.equals(endWord)) {
-                        return next.reconstructPath();
+                    if(nextWord.equals(endWord)) {
+                        return new SearchResult(next.reconstructPath(), visitedWords.size());
                     }
                 }
             }
         } 
-        return Collections.emptyList();
+        return new SearchResult();
     }
 }

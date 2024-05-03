@@ -3,7 +3,7 @@ package src.Algorithm;
 import java.util.*;
 
 public class UCS extends Algorithm{
-    public List<String> process(String startWord, String endWord, List<String> dictionary) {
+    public SearchResult process(String startWord, String endWord, List<String> dictionary) {
         PriorityQueue<Node> priorityQueue = new PriorityQueue<>(Comparator.comparingInt(Node -> Node.getCost()));
         ArrayList<String> visitedWords = new ArrayList<>();
 
@@ -13,8 +13,8 @@ public class UCS extends Algorithm{
             Node currNode = priorityQueue.poll();
             String currWord = currNode.getWord();
             int currCost = currNode.getCost();
-            // visitedWords.add(currWord);
-            // dictionary.remove(currWord);
+            visitedWords.add(currWord);
+            dictionary.remove(currWord);
             List<String> nextWords = getValidWords(currWord, dictionary);
             for (String nextWord : nextWords) {
                 int newCost = currCost + 1;
@@ -24,13 +24,14 @@ public class UCS extends Algorithm{
                     Node next = new Node(nextWord, newCost, currNode);
                     priorityQueue.add(next);
                     if(nextWord.equals(endWord)){
-                        return next.reconstructPath();
+                        
+                        return new SearchResult(next.reconstructPath(), visitedWords.size());
                     }
                 }
             }
         }
 
-        return null;
+        return new SearchResult();
     }
     public int calculateCost(String word1, String word2) {
         if (word1.length() != word2.length()) {
