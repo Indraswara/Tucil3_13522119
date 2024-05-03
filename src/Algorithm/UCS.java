@@ -33,18 +33,4 @@ public class UCS extends Algorithm{
 
         return new SearchResult();
     }
-    public int calculateCost(String word1, String word2) {
-        if (word1.length() != word2.length()) {
-            throw new IllegalArgumentException("Words must have the same length");
-        }
-        int cost = 0;
-        for (int i = 0; i < word1.length(); i++) {
-            char char1 = word1.charAt(i);
-            char char2 = word2.charAt(i);
-            int charDiff = Math.abs((int) char1 - (int) char2);
-            cost += charDiff;
-        }
-    
-        return cost;
-    }
 }

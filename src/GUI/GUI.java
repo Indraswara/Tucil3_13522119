@@ -165,10 +165,10 @@ public class GUI implements ActionListener {
                     wordDisplay.append("Lama waktu: " + (endTime - startTime) + " ms\n");
                     wordDisplay.append("Panjang node: " + ans.getPath().size() + "\n");
                     wordDisplay.append("Banyak Node divisit: " + ans.getVisitedWordCount()+ "\n");
-    
+                    int count = 0;
                     wordDisplay.append("\nLIST NODE: \n");
                     for(var word : ans.getPath()){
-                        wordDisplay.append(word + "\n");
+                        wordDisplay.append(++count + ". " + word + "\n");
                     }
                 }
                 // Implement action here based on button click
