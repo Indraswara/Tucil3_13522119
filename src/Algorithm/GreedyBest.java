@@ -17,11 +17,10 @@ public class GreedyBest extends Algorithm{
             // dictionary.remove(currWord);
             List<String> nextWords = getValidWords(currWord, dictionary); 
             for(String nextWord : nextWords){
-                int newCost = heuristic(nextWord, endWord);
                 if(!visitedWords.contains(nextWord)){
                     visitedWords.add(nextWord); 
                     dictionary.remove(nextWord);
-                    Node next = new Node(nextWord, newCost, currNode);
+                    Node next = new Node(nextWord, heuristic(nextWord, endWord), currNode);
                     priorityQueue.add(next);
                     if (nextWord.equals(endWord)) {
                         return next.reconstructPath();

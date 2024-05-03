@@ -12,6 +12,20 @@ public class DictionaryLib{
         return dictLib.contains(word.toLowerCase());
     }
 
+    public List<String> filterDict(String word1, String word2){
+        if(word1.length() != word2.length()){
+            return null;
+        }
+
+        List<String> ans = new ArrayList<>();
+        for(var dictWord : dictLib){
+            if(dictWord.length() == word1.length()){
+                ans.add(dictWord);
+            }
+        }
+        return ans;
+    }
+
     public List<String> getDict(){
         return this.dictLib;
     }
