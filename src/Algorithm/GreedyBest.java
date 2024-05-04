@@ -1,48 +1,43 @@
 package src.Algorithm;
 
 import java.util.*;
-import src.Util.DictionaryLib;
 
 
 public class GreedyBest extends Algorithm{
-    public List<String> process(String startWord, String endWord, DictionaryLib dicrionary){
-        PriorityQueue<Node> priorityQueue = new PriorityQueue<>(Comparator.comparing(Node::getCost));
-        Map<String, Integer> costMap = new HashMap<>(); 
+    public SearchResult process(String startWord, String endWord, List<String> dictionary){
+        PriorityQueue<Node> priorityQueue = new PriorityQueue<>(Comparator.comparingInt(Node::getCost));
         Set<String> visitedWords = new HashSet<>(); 
-        Map<String, String> path = new HashMap<>();
 
-        priorityQueue.add(new Node(startWord, heuristic(startWord, endWord)));
-        costMap.put(startWord, heuristic(startWord, endWord));
+        priorityQueue.add(new Node(startWord, heuristic(startWord, endWord), null));
 
         while(!priorityQueue.isEmpty()){
             Node currNode = priorityQueue.poll(); 
             String currWord = currNode.getWord(); 
             visitedWords.add(currWord); 
-            List<String> nextWords = generateValidWords(currWord, startWord, endWord, dicrionary); 
+            dictionary.remove(currWord);
+            List<String> nextWords = getValidWords(currWord, dictionary); 
             for(String nextWord : nextWords){
-                int newCost = heuristic(nextWord, endWord);
-                // System.out.println(nextWord + " : " +  newCost);
-                if (!visitedWords.contains(nextWord) && (!costMap.containsKey(nextWord) || newCost < costMap.get(nextWord))) {
-                    costMap.put(nextWord, newCost); 
-                    path.put(nextWord, currWord);
-                    priorityQueue.add(new Node(nextWord, newCost));
+                if(!visitedWords.contains(nextWord)){
+                    visitedWords.add(nextWord); 
+                    dictionary.remove(nextWord);
+                    Node next = new Node(nextWord, heuristic(nextWord, endWord), currNode);
+                    priorityQueue.add(next);
                     if (nextWord.equals(endWord)) {
-                        return reconstructPath(path, startWord, endWord);
+                        return new SearchResult(next.reconstructPath(), visitedWords.size());
                     }
                 }
             }
         } 
-        return Collections.emptyList();
+        return new SearchResult();
     }
 
     public int heuristic(String word, String endWord){
         int distance = 0; 
         for(int i = 0; i < word.length(); i++){
             if(word.charAt(i) != endWord.charAt(i)){
-                distance += 10;
+                distance += 1;
             }
         }
         return distance;
-
     }
 }

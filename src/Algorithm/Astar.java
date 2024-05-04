@@ -1,55 +1,35 @@
 package src.Algorithm;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Set;
+import java.util.*;
 
-
-import src.Util.DictionaryLib;
 
 public class Astar extends Algorithm{
-     public List<String> process(String startWord, String endWord, DictionaryLib dicrionary){
+     public SearchResult process(String startWord, String endWord, List<String> dictionary){
         PriorityQueue<Node> priorityQueue = new PriorityQueue<>(Comparator.comparing(Node::getCost));
-        Map<String, Integer> costMap = new HashMap<>(); 
         Set<String> visitedWords = new HashSet<>(); 
-        Map<String, String> path = new HashMap<>();
 
         GreedyBest gbfs = new GreedyBest();
-        priorityQueue.offer(new Node(startWord, gbfs.heuristic(startWord, endWord)));
-        costMap.put(startWord, gbfs.heuristic(startWord, endWord));
+        priorityQueue.add(new Node(startWord, gbfs.heuristic(startWord, endWord), null));
         while(!priorityQueue.isEmpty()){
             Node currNode = priorityQueue.poll(); 
             String currWord = currNode.getWord(); 
+            int currCost = currNode.getCost();
             visitedWords.add(currWord); 
-            List<String> nextWords = generateValidWords(currWord, startWord, endWord, dicrionary); 
+            dictionary.remove(currWord);
+            List<String> nextWords = getValidWords(currWord, dictionary);
             for(String nextWord : nextWords){
-                int newCost = funcCost(currWord, nextWord, endWord);
-                // System.out.println(nextWord + " : " +  newCost);
-                
-                if (!visitedWords.contains(nextWord) && (!costMap.containsKey(nextWord) || newCost < costMap.get(nextWord))) {
-                    costMap.put(nextWord, newCost);
-                    path.put(nextWord, currWord);
-                    priorityQueue.offer(new Node(nextWord, newCost));
-                    if (nextWord.equals(endWord)) {
-                        return reconstructPath(path, startWord, endWord);
+                int newCost = currCost + 1 + gbfs.heuristic(nextWord, endWord);
+                if(!visitedWords.contains(nextWord)) {
+                    visitedWords.add(nextWord); 
+                    dictionary.remove(nextWord);
+                    Node next = new Node(nextWord, newCost, currNode);
+                    priorityQueue.add(next);
+                    if(nextWord.equals(endWord)) {
+                        return new SearchResult(next.reconstructPath(), visitedWords.size());
                     }
                 }
             }
         } 
-        return Collections.emptyList();
+        return new SearchResult();
     }
-
-    public int funcCost(String currWord, String nextWord, String endWord){
-        UCS ucs = new UCS();
-        GreedyBest gbfs = new GreedyBest();
-        int pathCost = ucs.calculateCost(currWord, nextWord);
-        int heuristic = gbfs.heuristic(nextWord, endWord);
-        
-        return heuristic + pathCost;
-    } 
 }
