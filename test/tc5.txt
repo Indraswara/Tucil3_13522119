@@ -1,0 +1,2 @@
+start: eat 
+finish: run
