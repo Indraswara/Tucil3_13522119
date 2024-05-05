@@ -1,0 +1,2 @@
+start: monster
+finish: thunder
